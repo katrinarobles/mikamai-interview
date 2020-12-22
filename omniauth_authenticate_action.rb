@@ -1,6 +1,3 @@
-# frozen_string_literal: true
-
-# no documentation for this class
 class OmniauthAuthenticateAction
   # Request object, received from the controller
   attr_reader :request
@@ -15,10 +12,13 @@ class OmniauthAuthenticateAction
 
   def find_or_create_user_by_omniauth!
     @user ||=
-      if uid.blank?
+      begin
+        raise ActiveRecord::RecordNotFound if uid.blank?
+
         User.find_by("#{provider_uid}": uid) ||
-          User.find_by(email: email).tap { |u| u&.update("#{provider_uid}": uid) } || password = Utils::TokenGenerator.url_safe
-        create_user(User)
+          User.find_by(email: email).tap { |u| u.update("#{provider_uid}": uid) } ||
+          password = Utils::TokenGenerator.url_safe
+        create_user(email, password)
       end
   end
 
@@ -27,16 +27,6 @@ class OmniauthAuthenticateAction
   end
 
   private
-
-  def create_user(user)
-    user.create(
-      email:                  email,
-      password:               password,
-      password_confirmation:  password,
-      "#{provider_uid}":      uid,
-      registration_completed: false
-    )
-  end
 
   def uid
     omniauth_hash[:uid]
@@ -48,6 +38,16 @@ class OmniauthAuthenticateAction
 
   def email
     omniauth_hash.dig :info, :email
+  end
+
+  def create_user(email, password)
+    User.create(
+      email: email,
+      password: password,
+      password_confirmation: password,
+      "#{provider_uid}": uid,
+      registration_completed: false
+    )
   end
 
   # Omniauth object. It acts like a hash and contains the user attributes
