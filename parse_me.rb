@@ -1,17 +1,60 @@
 require 'json'
 require 'open-uri'
 require 'net/http'
+require 'pry'
 
-uri = URI('https://ghibliapi.herokuapp.com/people')
-Net::HTTP.get(uri) # => String
+uri = URI.parse('https://ghibliapi.herokuapp.com/people')
+response = Net::HTTP.get_response(uri)
+mammals = JSON.parse(response.body)
 
+# Pry::ColorPrinter.pp(people)
+humans = []
+count = 0
 
-# Using the Studio Ghibli API (https://ghibliapi.herokuapp.com),
-# perform the scraping of all People objects belonging to the "Human" Species, optimizing for speed
-# of execution.
+def get_response(url)
+  species_uri = URI.parse(url)
+  response = Net::HTTP.get_response(species_uri)
+  JSON.parse(response.body)
+end
 
-url = 'https://ghibliapi.herokuapp.com'
-item_serialized = open(url).read
-people = JSON.parse(item_serialized)
+loop do
+  human_url = mammals[count]["species"]
+  species_response = get_response(mammals[count]['species'])
+  if species_response["name"] == 'Human'
+    mammals.each do |mammal|
+      humans << mammal if mammal['species'] == human_url
+    end
+    break
+  end
+  count += 1
+end
 
-puts people
+Pry::ColorPrinter.pp(humans)
+
+# loop do
+#   species_uri = URI.parse(mammals[count]["species"])
+#   response = Net::HTTP.get_response(species_uri)
+#   species_response = JSON.parse(response.body)
+#   if species_response["name"] == 'Human'
+#     human = species_response
+#     people = human["people"]
+#     people.each do |person|
+#       person_uri = URI.parse(person)
+#       person_response = Net::HTTP.get_response(person_uri)
+#       person_json = JSON.parse(person_response.body)
+#       humans << person_json
+#     end
+#     break
+#   end
+#   count += 1
+# end
+
+# mammals.each do |mammal|
+#   species = mammal["species"]
+#   species_uri = URI.parse(species)
+#   response = Net::HTTP.get_response(species_uri)
+#   species_response = JSON.parse(response.body)
+#   if species_response["name"] == "Human"
+#     humans << species_response
+#   end
+# end
