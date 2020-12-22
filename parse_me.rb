@@ -6,8 +6,7 @@ require 'pry'
 uri = URI.parse('https://ghibliapi.herokuapp.com/people')
 response = Net::HTTP.get_response(uri)
 mammals = JSON.parse(response.body)
-
-# Pry::ColorPrinter.pp(people)
+# Pry::ColorPrinter.pp(mammals)
 humans = []
 count = 0
 

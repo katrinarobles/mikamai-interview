@@ -29,6 +29,11 @@ const findIndex = (array, word) => {
   }
 }
 
+// Using the Studio Ghibli API (https://ghibliapi.herokuapp.com), perform the scraping of all
+// People objects belonging to the "Human" Species, optimizing for speed of execution.
+//  SEE PARSE_ME.RB for this solution
+
+
 // Given an array with various levels of nesting, implement a method that flattens the array without using
 // utility libraries such as lodash or underscore.
 // Example: for the array [1,[4,5],[2,[3,4]]] the result is [1,4,5,2,3,4].
