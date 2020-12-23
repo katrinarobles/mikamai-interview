@@ -4,7 +4,6 @@ const rows = document.querySelectorAll('.product');
 const mainCheckbox = document.querySelector('thead .selection')
 const checkboxes = document.querySelectorAll('tbody .selection')
 const mainRemoveButton = document.querySelector('thead .remove-action');
-const div = document.querySelector('hidden-div');
 
 
 const removeLink = removeButtons.forEach((button) => {
