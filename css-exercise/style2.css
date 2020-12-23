@@ -1,0 +1,42 @@
+/* COULDNT FIGURE OUT WITH FLEX*/
+.container {
+  display: flex;
+  height: 100vh;
+  align-content: center;
+  border: 1px solid black;
+
+}
+
+.flexy-container {
+  display: flex;
+  height: 50%;
+
+}
+
+.cards {
+  border: solid 2px black;
+  margin: 1%;
+  padding: .5%;
+  display: flex;
+  width: 25%;
+  flex-direction: column;
+
+}
+
+.details {
+  text-align: justify;
+  text-align: inter-character;
+}
+
+@media only screen and (max-width: 640px) {
+  .container {
+    display: block;
+  }
+  .flexy-container {
+    display: block;
+    height: auto;
+  }
+  .cards {
+    width: 95%;
+  }
+}
