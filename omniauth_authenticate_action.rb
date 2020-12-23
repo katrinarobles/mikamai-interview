@@ -15,8 +15,8 @@ class OmniauthAuthenticateAction
       begin
         raise ActiveRecord::RecordNotFound if uid.blank?
 
-        User.find_by("#{provider_uid}": uid) ||
-          User.find_by(email: email).tap { |u| u.update("#{provider_uid}": uid) } ||
+        find_user(provider_uid, uid) ||
+          find_user(email, email).tap { |u| u.update("#{provider_uid}": uid) } ||
           password = Utils::TokenGenerator.url_safe
         create_user(email, password)
       end
@@ -27,6 +27,10 @@ class OmniauthAuthenticateAction
   end
 
   private
+
+  def find_user(key, value)
+    User.find_by("#{key}": value)
+  end
 
   def uid
     omniauth_hash[:uid]
