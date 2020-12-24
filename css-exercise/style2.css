@@ -1,42 +1,41 @@
-/* COULDNT FIGURE OUT WITH FLEX*/
+body {
+    height: 98vh;
+ }
+
 .container {
   display: flex;
-  height: 100vh;
-  align-content: center;
-  border: 1px solid black;
-
+  align-items: center;
+  height: 100%;
 }
-
 .flexy-container {
   display: flex;
-  height: 50%;
-
+  width: 100%;
 }
 
 .cards {
   border: solid 2px black;
   margin: 1%;
-  padding: .5%;
+  padding: 2%;
   display: flex;
-  width: 25%;
-  flex-direction: column;
-
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
 }
-
 .details {
   text-align: justify;
-  text-align: inter-character;
+}
+.footsies {
+  align-self: flex-end;
 }
 
 @media only screen and (max-width: 640px) {
-  .container {
+  .container, .flexy-container {
     display: block;
-  }
-  .flexy-container {
-    display: block;
-    height: auto;
+    margin: auto 0;
   }
   .cards {
+    display: block;
     width: 95%;
+    margin: 1% auto;
   }
 }
