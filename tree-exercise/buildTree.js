@@ -4,9 +4,9 @@ const MyTree = require('./myTree.js');
 
 var tree = new MyTree();
 var firstNode = tree.root.addNode();
-// var secondNode = tree.root.addNode();
+var secondNode = tree.root.addNode();
 console.log(firstNode);
-// console.log(secondNode);
+console.log(secondNode);
 // firstNode.addNode().addNode({ data: 'leaf1' });
 // firstNode.getNodeAt(0).addNode({ data: 'leaf2' });
 // console.log(tree.root.maxDepth())  // => 3

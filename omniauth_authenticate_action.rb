@@ -11,15 +11,20 @@ class OmniauthAuthenticateAction
   end
 
   def find_or_create_user_by_omniauth!
-    @user ||=
-      begin
-        raise ActiveRecord::RecordNotFound if uid.blank?
+    @user ||= begin
+      raise ActiveRecord::RecordNotFound if uid.blank?
 
-        find_user(provider_uid, uid) ||
-          find_user(email, email).tap { |u| u.update("#{provider_uid}": uid) } ||
-          password = Utils::TokenGenerator.url_safe
-        create_user(email, password)
-      end
+      find_or_initialize_by("#{provider_uid}": uid, email: email)
+      password = Utils::TokenGenerator.url_safe
+      @user = {
+        email: email,
+        password: password,
+        password_confirmation: password,
+        "#{provider_uid}": uid,
+        registration_completed: false
+      }
+      @user.save
+    end
   end
 
   def redirect_path
@@ -27,10 +32,6 @@ class OmniauthAuthenticateAction
   end
 
   private
-
-  def find_user(key, value)
-    User.find_by("#{key}": value)
-  end
 
   def uid
     omniauth_hash[:uid]
@@ -42,16 +43,6 @@ class OmniauthAuthenticateAction
 
   def email
     omniauth_hash.dig :info, :email
-  end
-
-  def create_user(email, password)
-    User.create(
-      email: email,
-      password: password,
-      password_confirmation: password,
-      "#{provider_uid}": uid,
-      registration_completed: false
-    )
   end
 
   # Omniauth object. It acts like a hash and contains the user attributes

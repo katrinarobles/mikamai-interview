@@ -2,8 +2,8 @@ const LEFT = 0;
 const RIGHT = 1;
 
 class TreeNode {
-  constructor(data) {
-    this.data = data || undefined;
+  constructor({ data = undefined } = {}) {
+    this.data = data;
     this._children = [];
     this._parent = null;
   }
@@ -14,7 +14,7 @@ class TreeNode {
     if (this.root) {
       const { found, parent } = this.getNodeAt(data); // <1>
       if (found) { // duplicated: value already exist on the tree
-        found.meta.multiplicity = (found.meta.multiplicity || 1) + 1; // <2>
+        found = (found || 1) + 1; // <2>
       } else if (data < parent.data) {
         parent.setLeftAndUpdateParent(newNode);
       } else {
@@ -50,35 +50,24 @@ class TreeNode {
     }
   }
 
-  has(value) {
-    return !!this.find(value);
+  has(data) {
+    return !!this.find(data);
   }
 
-  // tag::find[]
-  /**
-   * @param {any} value value to find
-   * @returns {BinaryTreeNode|null} node if it found it or null if not
-   */
-  find(value) {
-    return this.getNodeAt(value).found;
+  find(data) {
+    return this.getNodeAt(data).found;
   }
 
 
-  getNodeAt(value, node = this.root, parent = null) {
-    if (!node || node.value === value) {
+  getNodeAt(data, node = this.root, parent = null) {
+    if (!node || node.data === data) {
       return { found: node, parent };
-    } if (value < node.value) {
-      return this.getNodeAt(value, node.left, node);
+    } if (data < node.data) {
+      return this.getNodeAt(data, node.left, node);
     }
-    return this.getNodeAt(value, node.right, node);
+    return this.getNodeAt(data, node.right, node);
   }
-  // end::find[]
 
-  /**
-   * Get the node with the max value of subtree: the right-most value.
-   * @param {BinaryTreeNode} node subtree's root
-   * @returns {BinaryTreeNode} right-most node (max value)
-   */
   getRightmost(node = this.root) {
     if (!node || !node.right) {
       return node;
@@ -86,36 +75,23 @@ class TreeNode {
     return this.getMax(node.right);
   }
 
-  // tag::leftMost[]
-  /**
-   * Get the node with the min value of subtree: the left-most value.
-   * @param {BinaryTreeNode} node subtree's root
-   * @returns {BinaryTreeNode} left-most node (min value)
-   */
   getLeftmost(node = this.root) {
     if (!node || !node.left) {
       return node;
     }
     return this.getMin(node.left);
   }
-  // end::leftMost[]
 
-
-  // tag::remove[]
-  /**
-   * Remove a node from the tree
-   * @returns {boolean} false if not found and true if it was deleted
-   */
-  removeNode(value) {
-    const { found: nodeToRemove, parent } = this.getNodeAt(value); // <1>
+  removeNode(data) {
+    const { found: nodeToRemove, parent } = this.getNodeAt(data); // <1>
 
     if (!nodeToRemove) return false; // <2>
 
     // Combine left and right children into one subtree without nodeToRemove
     const removedNodeChildren = this.combineLeftIntoRightSubtree(nodeToRemove); // <3>
 
-    if (nodeToRemove.meta.multiplicity && nodeToRemove.meta.multiplicity > 1) { // <4>
-      nodeToRemove.meta.multiplicity -= 1; // handles duplicated
+    if (nodeToRemove && nodeToRemove > 1) { // <4>
+      nodeToRemove -= 1; // handles duplicated
     } else if (nodeToRemove === this.root) { // <5>
       // Replace (root) node to delete with the combined subtree.
       this.root = removedNodeChildren;
@@ -133,25 +109,6 @@ class TreeNode {
   // end::remove[]
 
   // tag::combine[]
-  /**
-   * Combine left into right children into one subtree without given parent node.
-   *
-   * @example combineLeftIntoRightSubtree(30)
-   *
-   *      30*                             40
-   *    /     \                          /  \
-   *   10      40      combined        35   50
-   *     \    /  \    ---------->     /
-   *     15  35   50                 10
-   *                                   \
-   *                                    15
-   *
-   * It takes node 30 left subtree (10 and 15) and put it in the
-   * leftmost node of the right subtree (40, 35, 50).
-   *
-   * @param {BinaryTreeNode} node
-   * @returns {BinaryTreeNode} combined subtree
-   */
   combineLeftIntoRightSubtree(node) {
     if (node.right) {
       const leftmost = this.getLeftmost(node.right);
