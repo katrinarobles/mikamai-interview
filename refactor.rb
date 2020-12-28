@@ -14,7 +14,7 @@ class OmniauthAuthenticateAction
     @user ||= begin
       raise ActiveRecord::RecordNotFound if uid.blank?
 
-      find_or_initialize_by("#{provider_uid}": uid, email: email)
+      @user = find_or_initialize_by("#{provider_uid}": uid, email: email)
       password = Utils::TokenGenerator.url_safe
       @user = {
         email: email,
